@@ -166,8 +166,14 @@ void PubHandler::CheckTimer(uint32_t id) {
   if (PubHandler::is_timestamp_sync_.load()) { // Enable time synchronization
     auto& process_handler = lidar_process_handlers_[id];
     uint64_t recent_time_ms = process_handler->GetRecentTimeStamp() / kRatioOfMsToNs;
-    if ((recent_time_ms % publish_interval_ms_ != 0) || recent_time_ms == 0) {
-      return;
+    //if ((recent_time_ms % publish_interval_ms_ != 0) || recent_time_ms == 0) {
+    //  return;
+    //}
+    // Allow a small tolerance for the modulo check to reduce the chance of skipping.
+    const uint64_t tolerance_ms = 5;  // Set tolerance to 5 milliseconds.
+    uint64_t mod_result = recent_time_ms % publish_interval_ms_;
+    if ((mod_result > tolerance_ms && mod_result < publish_interval_ms_ - tolerance_ms) || recent_time_ms == 0) {
+        return;
     }
 
     uint64_t diff = process_handler->GetRecentTimeStamp() - process_handler->GetLidarBaseTime();
