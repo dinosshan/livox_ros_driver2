@@ -38,24 +38,54 @@ DriverNode::~DriverNode() {
   imudata_poll_thread_->join();
 }
 
-DriverNode::DriverNode(const rclcpp::NodeOptions& options) : Node("livox_lidar_publisher", options) {
+#ifdef BUILDING_ROS1
+
+// ROS1 implementation
+bool DriverNode::handleSetWorkMode(
+    livox_ros_driver2::LidarSetWorkMode::Request &request,
+    livox_ros_driver2::LidarSetWorkMode::Response &response) {
+  
+  LivoxLidarWorkMode work_mode = (request.work_mode == 0) ? 
+      kLivoxLidarNormal : kLivoxLidarWakeUp;
+
+  bool success = LivoxLidarCallback::SetLidarWorkMode(
+      request.handle, work_mode, lddc_ptr_->GetLdsLidar());
+
+  response.success = success;
+  response.message = success ? 
+      "Successfully set work mode" : 
+      "Failed to set work mode";
+
+  ROS_INFO("Set Lidar work mode request: handle=%u, mode=%s, result=%s",
+      request.handle,
+      (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"),
+      (success ? "Success" : "Failed"));
+      
+  return success;
+}
+
+#elif defined BUILDING_ROS2
+
+// ROS2 implementation
+DriverNode::DriverNode(const rclcpp::NodeOptions& options) 
+    : Node("livox_lidar_publisher", options) {
   // ... existing initialization code ...
 
   // Add service server
-  set_work_mode_srv_ = this->create_service<livox_ros_driver2::srv::LidarSetWorkMode>(
+  set_work_mode_srv_ = this->create_service<livox_interfaces2::srv::LidarSetWorkMode>(
       "livox_lidar_set_mode",
-      std::bind(&DriverNode::handleSetWorkMode, this,
+      std::bind(&DriverNode::handleSetWorkMode, this, 
                 std::placeholders::_1, std::placeholders::_2));
 }
 
 void DriverNode::handleSetWorkMode(
-    const std::shared_ptr<livox_ros_driver2::srv::LidarSetWorkMode::Request> request,
-    std::shared_ptr<livox_ros_driver2::srv::LidarSetWorkMode::Response> response) {
-
-  LivoxLidarWorkMode work_mode = (request->work_mode == 0) ?
+    const std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Request> request,
+    std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Response> response) {
+  
+  LivoxLidarWorkMode work_mode = (request->work_mode == 0) ? 
       kLivoxLidarNormal : kLivoxLidarWakeUp;
 
-  bool success = livox_ros::LivoxLidarCallback::SetLidarWorkMode(
+  bool success = LivoxLidarCallback::SetLidarWorkMode(
       request->handle, work_mode, lddc_ptr_->GetLdsLidar());
 
   response->success = success;
@@ -69,6 +99,8 @@ void DriverNode::handleSetWorkMode(
       (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"),
       (success ? "Success" : "Failed"));
 }
+
+#endif
 
 } // namespace livox_ros
 

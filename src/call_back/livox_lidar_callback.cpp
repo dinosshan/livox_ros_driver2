@@ -28,6 +28,10 @@
 #include <thread>
 #include <iostream>
 
+namespace {
+  constexpr uint32_t LIVOX_LIDAR_SLEEP_MODE_CODE = 0x0A;  // Define sleep mode code
+}
+
 namespace livox_ros {
 
 void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,

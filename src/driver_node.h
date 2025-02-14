@@ -26,7 +26,12 @@
 #define LIVOX_DRIVER_NODE_H
 
 #include "include/ros_headers.h"
+
+#ifdef BUILDING_ROS1
 #include "livox_ros_driver2/LidarSetWorkMode.h"
+#else
+#include "livox_interfaces2/srv/lidar_set_work_mode.hpp"
+#endif
 
 namespace livox_ros {
 
@@ -44,6 +49,14 @@ class DriverNode final : public ros::NodeHandle {
 
   void PointCloudDataPollThread();
   void ImuDataPollThread();
+
+  // Add service server for ROS1
+  ros::ServiceServer set_work_mode_srv_;
+  
+  // Add service callback for ROS1
+  bool handleSetWorkMode(
+      livox_ros_driver2::LidarSetWorkMode::Request &request,
+      livox_ros_driver2::LidarSetWorkMode::Response &response);
 
   std::unique_ptr<Lddc> lddc_ptr_;
   std::shared_ptr<std::thread> pointclouddata_poll_thread_;
@@ -72,10 +85,10 @@ class DriverNode final : public rclcpp::Node {
   std::shared_future<void> future_;
   std::promise<void> exit_signal_;
 
-  // Add service server
+  // Add service server for ROS2
   rclcpp::Service<livox_interfaces2::srv::LidarSetWorkMode>::SharedPtr set_work_mode_srv_;
   
-  // Add service callback
+  // Add service callback for ROS2
   void handleSetWorkMode(
       const std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Request> request,
       std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Response> response);
