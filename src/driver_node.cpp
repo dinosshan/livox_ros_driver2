@@ -57,6 +57,7 @@ bool DriverNode::handleSetWorkMode(
   
   ROS_INFO_STREAM("==========================================");
   ROS_INFO_STREAM("Service callback triggered for work_mode: " << (int)request.work_mode);
+  ROS_INFO_STREAM("Thread ID: " << std::this_thread::get_id());  // Add thread ID
   ROS_INFO_STREAM("==========================================");
   
   if (lddc_ptr_ == nullptr) {
