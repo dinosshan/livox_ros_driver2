@@ -40,6 +40,8 @@ class DriverNode final : public ros::NodeHandle {
   DriverNode &operator=(const DriverNode &) = delete;
 
   DriverNode& GetNode() noexcept;
+  bool HandleLidarControl(livox_ros_driver2::LidarControl::Request &req,
+                         livox_ros_driver2::LidarControl::Response &res);
 
   void PointCloudDataPollThread();
   void ImuDataPollThread();
@@ -49,6 +51,7 @@ class DriverNode final : public ros::NodeHandle {
   std::shared_ptr<std::thread> imudata_poll_thread_;
   std::shared_future<void> future_;
   std::promise<void> exit_signal_;
+  ros::ServiceServer lidar_control_service_;
 };
 
 #elif defined BUILDING_ROS2
@@ -64,12 +67,15 @@ class DriverNode final : public rclcpp::Node {
  private:
   void PointCloudDataPollThread();
   void ImuDataPollThread();
+  void HandleLidarControl(const std::shared_ptr<livox_ros_driver2::srv::LidarControl::Request> request,
+                         std::shared_ptr<livox_ros_driver2::srv::LidarControl::Response> response);
 
   std::unique_ptr<Lddc> lddc_ptr_;
   std::shared_ptr<std::thread> pointclouddata_poll_thread_;
   std::shared_ptr<std::thread> imudata_poll_thread_;
   std::shared_future<void> future_;
   std::promise<void> exit_signal_;
+  rclcpp::Service<livox_ros_driver2::srv::LidarControl>::SharedPtr lidar_control_service_;
 };
 #endif
 

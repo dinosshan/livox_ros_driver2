@@ -105,6 +105,11 @@ int main(int argc, char **argv) {
     DRIVER_ERROR(livox_node, "Invalid data src (%d), please check the launch file", data_src);
   }
 
+  // Create the LiDAR control service
+  livox_node.lidar_control_service_ = livox_node.GetNode().advertiseService(
+      "livox_lidar_control", &livox_ros::DriverNode::HandleLidarControl, &livox_node);
+  DRIVER_INFO(livox_node, "LiDAR control service is ready");
+
   livox_node.pointclouddata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::PointCloudDataPollThread, &livox_node);
   livox_node.imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, &livox_node);
   while (ros::ok()) { usleep(10000); }
@@ -180,6 +185,13 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
   } else {
     DRIVER_ERROR(*this, "Invalid data src (%d), please check the launch file", data_src);
   }
+
+  // Create the LiDAR control service
+  lidar_control_service_ = this->create_service<livox_ros_driver2::srv::LidarControl>(
+      "livox_lidar_control",
+      std::bind(&DriverNode::HandleLidarControl, this,
+                std::placeholders::_1, std::placeholders::_2));
+  DRIVER_INFO(*this, "LiDAR control service is ready");
 
   pointclouddata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::PointCloudDataPollThread, this);
   imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, this);
