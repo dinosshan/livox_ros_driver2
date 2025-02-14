@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
   std::string frame_id = "livox_frame";
   bool lidar_bag = true;
   bool imu_bag   = false;
-  int lidar_mode = 3;
+  int lidar_mode = 1;
 
   livox_node.GetNode().getParam("xfer_format", xfer_format);
   livox_node.GetNode().getParam("multi_topic", multi_topic);
@@ -129,7 +129,7 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
   double publish_freq = 10.0; /* Hz */
   int output_type = kOutputToRos;
   std::string frame_id;
-  int lidar_mode = 3;
+  int lidar_mode = 1;
 
   this->declare_parameter("xfer_format", xfer_format);
   this->declare_parameter("multi_topic", 0);
