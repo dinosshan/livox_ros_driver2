@@ -26,6 +26,13 @@
 #include "lddc.h"
 #include "call_back/livox_lidar_callback.h"
 #include "livox_lidar_def.h"
+#include "livox_lidar_api.h"
+
+// Include Livox SDK headers
+extern "C" {
+#include "livox_lidar_api.h"
+#include "livox_lidar_def.h"
+}
 
 namespace livox_ros {
 
@@ -47,8 +54,8 @@ bool DriverNode::handleSetWorkMode(
     livox_ros_driver2::LidarSetWorkMode::Request &request,
     livox_ros_driver2::LidarSetWorkMode::Response &response) {
   
-  LivoxLidarWorkMode work_mode = (request.work_mode == 0) ? 
-      kLivoxLidarNormal : kLivoxLidarWakeUp;
+  LivoxLidarWorkMode work_mode = static_cast<LivoxLidarWorkMode>(
+      request.work_mode == 0 ? kLivoxLidarNormal : kLivoxLidarWakeUp);
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
       request.handle, work_mode, lddc_ptr_->GetLds());
@@ -84,8 +91,8 @@ void DriverNode::handleSetWorkMode(
     const std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Request> request,
     std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Response> response) {
   
-  LivoxLidarWorkMode work_mode = (request->work_mode == 0) ? 
-      kLivoxLidarNormal : kLivoxLidarWakeUp;
+  LivoxLidarWorkMode work_mode = static_cast<LivoxLidarWorkMode>(
+      request->work_mode == 0 ? kLivoxLidarNormal : kLivoxLidarWakeUp);
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
       request->handle, work_mode, lddc_ptr_->GetLds());
