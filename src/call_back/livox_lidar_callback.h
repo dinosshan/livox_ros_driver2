@@ -62,6 +62,17 @@ class LivoxLidarCallback {
                                   LivoxLidarAsyncControlResponse *response,
                                   void *client_data);
 
+  /** 
+   * @brief Set the Lidar work mode
+   * @param handle The handle of the Lidar device
+   * @param work_mode The desired work mode (kLivoxLidarNormal or kLivoxLidarWakeUp)
+   * @param client_data Pointer to the LdsLidar instance
+   * @return true if the command was sent successfully, false otherwise
+   */
+  static bool SetLidarWorkMode(const uint32_t handle, 
+                              LivoxLidarWorkMode work_mode,
+                              void* client_data);
+
  private:
   static LidarDevice* GetLidarDevice(const uint32_t handle, void* client_data);
 };

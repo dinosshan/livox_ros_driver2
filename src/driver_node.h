@@ -26,7 +26,7 @@
 #define LIVOX_DRIVER_NODE_H
 
 #include "include/ros_headers.h"
-#include "livox_ros_driver2/srv/lidar_set_work_mode.hpp"
+#include "livox_ros_driver2/LidarSetWorkMode.h"
 
 namespace livox_ros {
 
@@ -73,12 +73,12 @@ class DriverNode final : public rclcpp::Node {
   std::promise<void> exit_signal_;
 
   // Add service server
-  rclcpp::Service<livox_ros_driver2::srv::LidarSetWorkMode>::SharedPtr set_work_mode_srv_;
+  rclcpp::Service<livox_interfaces2::srv::LidarSetWorkMode>::SharedPtr set_work_mode_srv_;
   
   // Add service callback
   void handleSetWorkMode(
-      const std::shared_ptr<livox_ros_driver2::srv::LidarSetWorkMode::Request> request,
-      std::shared_ptr<livox_ros_driver2::srv::LidarSetWorkMode::Response> response);
+      const std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Request> request,
+      std::shared_ptr<livox_interfaces2::srv::LidarSetWorkMode::Response> response);
 };
 #endif
 

@@ -50,6 +50,11 @@ if(ROS_EDITION STREQUAL "ROS1")
   #   Message2.msg
   )
 
+  ## Generate services in the 'srv' folder
+  add_service_files(FILES
+    LidarSetWorkMode.srv
+  )
+
   ## Generate added messages and services with any dependencies listed here
   generate_messages(DEPENDENCIES
     std_msgs
@@ -241,13 +246,9 @@ else(ROS_EDITION STREQUAL "ROS2")
   rosidl_generate_interfaces(${LIVOX_INTERFACES}
     "msg/CustomPoint.msg"
     "msg/CustomMsg.msg"
+    "srv/LidarSetWorkMode.srv"
     DEPENDENCIES builtin_interfaces std_msgs
     LIBRARY_NAME ${PROJECT_NAME}
-  )
-
-  rosidl_generate_interfaces(${PROJECT_NAME}
-    "srv/LidarSetWorkMode.srv"
-    # ... any existing msgs ...
   )
 
   ## make sure the livox_lidar_sdk_shared library is installed

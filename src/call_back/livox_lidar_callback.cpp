@@ -108,6 +108,29 @@ void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,
   return;
 }
 
+bool LivoxLidarCallback::SetLidarWorkMode(const uint32_t handle, 
+                                         LivoxLidarWorkMode work_mode,
+                                         void* client_data) {
+  if (client_data == nullptr) {
+    std::cout << "failed to set work mode, client data is nullptr" << std::endl;
+    return false;
+  }
+
+  LidarDevice* lidar_device = GetLidarDevice(handle, client_data);
+  if (lidar_device == nullptr) {
+    std::cout << "failed to set work mode since no lidar device found, handle: "
+              << handle << std::endl;
+    return false;
+  }
+
+  std::cout << "changing work mode to " 
+            << (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp") 
+            << ", handle: " << handle << std::endl;
+            
+  livox_status status = SetLivoxLidarWorkMode(handle, work_mode, WorkModeChangedCallback, nullptr);
+  return (status == kLivoxLidarStatusSuccess);
+}
+
 void LivoxLidarCallback::WorkModeChangedCallback(livox_status status,
                                                  uint32_t handle,
                                                  LivoxLidarAsyncControlResponse *response,
@@ -115,7 +138,12 @@ void LivoxLidarCallback::WorkModeChangedCallback(livox_status status,
   if (status != kLivoxLidarStatusSuccess) {
     std::cout << "failed to change work mode, handle: " << handle << ", try again..."<< std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    SetLivoxLidarWorkMode(handle, kLivoxLidarWakeUp, WorkModeChangedCallback, nullptr);
+    // Keep the same work mode when retrying
+    if (response != nullptr && response->ret_code == LIVOX_LIDAR_SLEEP_MODE_CODE) {
+      SetLivoxLidarWorkMode(handle, kLivoxLidarWakeUp, WorkModeChangedCallback, nullptr);
+    } else {
+      SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
+    }
     return;
   }
   std::cout << "successfully change work mode, handle: " << handle << std::endl;
