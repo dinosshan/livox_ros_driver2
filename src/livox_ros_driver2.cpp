@@ -120,15 +120,41 @@ int main(int argc, char **argv) {
 bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
-    // Basic implementation
+    LdsLidar* lidar = LdsLidar::GetInstance();
+    if (!lidar) {
+        res.success = false;
+        res.message = "Failed to get LiDAR instance";
+        return res.success;
+    }
+
     if (req.enable) {
-        // Add your start logic here
-        res.success = true;
-        res.message = "LiDAR enabled successfully";
+        // Start LiDAR
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+                                                   kLivoxLidarNormal, 
+                                                   nullptr, 
+                                                   nullptr);
+        if (status != kLivoxLidarStatusSuccess) {
+            res.success = false;
+            res.message = "Failed to start LiDAR, status: " + std::to_string(status);
+        } else {
+            res.success = true;
+            res.message = "LiDAR started successfully";
+            DRIVER_INFO(*this, "START LIDAR");
+        }
     } else {
-        // Add your stop logic here
-        res.success = true;
-        res.message = "LiDAR disabled successfully";
+        // Stop LiDAR
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+                                                   kLivoxLidarWakeUp, 
+                                                   nullptr, 
+                                                   nullptr);
+        if (status != kLivoxLidarStatusSuccess) {
+            res.success = false;
+            res.message = "Failed to stop LiDAR, status: " + std::to_string(status);
+        } else {
+            res.success = true;
+            res.message = "LiDAR stopped successfully";
+            DRIVER_INFO(*this, "STOP LIDAR");
+        }
     }
     return res.success;
 }
@@ -216,15 +242,41 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
 bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
-    // Basic implementation
+    LdsLidar* lidar = LdsLidar::GetInstance();
+    if (!lidar) {
+        res.success = false;
+        res.message = "Failed to get LiDAR instance";
+        return res.success;
+    }
+
     if (req.enable) {
-        // Add your start logic here
-        res.success = true;
-        res.message = "LiDAR enabled successfully";
+        // Start LiDAR
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+                                                   kLivoxLidarNormal, 
+                                                   nullptr, 
+                                                   nullptr);
+        if (status != kLivoxLidarStatusSuccess) {
+            res.success = false;
+            res.message = "Failed to start LiDAR, status: " + std::to_string(status);
+        } else {
+            res.success = true;
+            res.message = "LiDAR started successfully";
+            DRIVER_INFO(*this, "START LIDAR");
+        }
     } else {
-        // Add your stop logic here
-        res.success = true;
-        res.message = "LiDAR disabled successfully";
+        // Stop LiDAR
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+                                                   kLivoxLidarWakeUp, 
+                                                   nullptr, 
+                                                   nullptr);
+        if (status != kLivoxLidarStatusSuccess) {
+            res.success = false;
+            res.message = "Failed to stop LiDAR, status: " + std::to_string(status);
+        } else {
+            res.success = true;
+            res.message = "LiDAR stopped successfully";
+            DRIVER_INFO(*this, "STOP LIDAR");
+        }
     }
     return res.success;
 }
