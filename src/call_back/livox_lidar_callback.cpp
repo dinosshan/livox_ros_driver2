@@ -103,7 +103,7 @@ void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,
   }
 
   std::cout << "begin to change work mode to 'Normal', handle: " << handle << std::endl;
-  SetLivoxLidarWorkMode(handle, kLivoxLidarSleep, WorkModeChangedCallback, nullptr);
+  SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
   EnableLivoxLidarImuData(handle, LivoxLidarCallback::EnableLivoxLidarImuDataCallback, lds_lidar);
   return;
 }
@@ -115,7 +115,7 @@ void LivoxLidarCallback::WorkModeChangedCallback(livox_status status,
   if (status != kLivoxLidarStatusSuccess) {
     std::cout << "failed to change work mode, handle: " << handle << ", try again..."<< std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    SetLivoxLidarWorkMode(handle, kLivoxLidarSleep, WorkModeChangedCallback, nullptr);
+    SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
     return;
   }
   std::cout << "successfully change work mode, handle: " << handle << std::endl;
