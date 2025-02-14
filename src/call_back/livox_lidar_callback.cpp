@@ -123,15 +123,27 @@ bool LivoxLidarCallback::SetLidarWorkMode(const uint32_t handle,
   LidarDevice* lidar_device = GetLidarDevice(handle, client_data);
   if (lidar_device == nullptr) {
     std::cout << "failed to set work mode since no lidar device found, handle: "
-              << handle << std::endl;
+              << handle << " (IP: " 
+              << ((handle >> 24) & 0xFF) << "."
+              << ((handle >> 16) & 0xFF) << "."
+              << ((handle >> 8) & 0xFF) << "."
+              << (handle & 0xFF) << ")" << std::endl;
     return false;
   }
 
   std::cout << "changing work mode to " 
             << (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp") 
-            << ", handle: " << handle << std::endl;
+            << ", handle: " << handle 
+            << " (IP: "
+            << ((handle >> 24) & 0xFF) << "."
+            << ((handle >> 16) & 0xFF) << "."
+            << ((handle >> 8) & 0xFF) << "."
+            << (handle & 0xFF) << ")" << std::endl;
             
   livox_status status = SetLivoxLidarWorkMode(handle, work_mode, WorkModeChangedCallback, nullptr);
+  std::cout << "SetLivoxLidarWorkMode returned status: " 
+            << (status == kLivoxLidarStatusSuccess ? "Success" : "Failed") 
+            << " (" << static_cast<int>(status) << ")" << std::endl;
   return (status == kLivoxLidarStatusSuccess);
 }
 

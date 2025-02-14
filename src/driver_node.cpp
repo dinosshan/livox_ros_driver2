@@ -55,8 +55,26 @@ bool DriverNode::handleSetWorkMode(
     livox_ros_driver2::LidarSetWorkMode::Request &request,
     livox_ros_driver2::LidarSetWorkMode::Response &response) {
   
+  if (request.handle == 0) {
+    response.success = false;
+    response.message = "Invalid handle: handle cannot be 0";
+    ROS_ERROR("%s", response.message.c_str());
+    return false;
+  }
+
+  if (lddc_ptr_ == nullptr || lddc_ptr_->GetLds() == nullptr) {
+    response.success = false;
+    response.message = "Driver not initialized properly";
+    ROS_ERROR("%s", response.message.c_str());
+    return false;
+  }
+
   LivoxLidarWorkMode work_mode = static_cast<LivoxLidarWorkMode>(
       request.work_mode == 0 ? kLivoxLidarNormal : kLivoxLidarWakeUp);
+
+  ROS_INFO("Attempting to set work mode: handle=%u, mode=%s", 
+           request.handle, 
+           (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"));
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
       request.handle, work_mode, lddc_ptr_->GetLds());
@@ -71,7 +89,7 @@ bool DriverNode::handleSetWorkMode(
       (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"),
       (success ? "Success" : "Failed"));
       
-  return success;
+  return true;  // Return true to indicate service completed, even if operation failed
 }
 
 DriverNode::DriverNode() : ros::NodeHandle() {
