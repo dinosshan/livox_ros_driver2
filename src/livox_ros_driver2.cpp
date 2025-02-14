@@ -120,7 +120,8 @@ int main(int argc, char **argv) {
 bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
-    LdsLidar* lidar = LdsLidar::GetInstance();
+    // Get the instance with default publish frequency (we can use any since instance already exists)
+    LdsLidar* lidar = LdsLidar::GetInstance(10.0);  // Using 10Hz as default
     if (!lidar) {
         res.success = false;
         res.message = "Failed to get LiDAR instance";
@@ -129,7 +130,7 @@ bool DriverNode::HandleLidarControl(
 
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
                                                    kLivoxLidarNormal, 
                                                    nullptr, 
                                                    nullptr);
@@ -143,7 +144,7 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
                                                    kLivoxLidarWakeUp, 
                                                    nullptr, 
                                                    nullptr);
@@ -242,7 +243,8 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
 bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
-    LdsLidar* lidar = LdsLidar::GetInstance();
+    // Get the instance with default publish frequency (we can use any since instance already exists)
+    LdsLidar* lidar = LdsLidar::GetInstance(10.0);  // Using 10Hz as default
     if (!lidar) {
         res.success = false;
         res.message = "Failed to get LiDAR instance";
@@ -251,7 +253,7 @@ bool DriverNode::HandleLidarControl(
 
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
                                                    kLivoxLidarNormal, 
                                                    nullptr, 
                                                    nullptr);
@@ -265,7 +267,7 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
                                                    kLivoxLidarWakeUp, 
                                                    nullptr, 
                                                    nullptr);
