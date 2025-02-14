@@ -76,7 +76,7 @@ class Lddc final {
       std::string &frame_id, bool lidar_bag, bool imu_bag);
 #elif defined BUILDING_ROS2
   Lddc(int format, int multi_topic, int data_src, int output_type, double frq,
-      std::string &frame_id);
+      std::string &frame_id, int lidar_mode);
 #endif
   ~Lddc();
 
@@ -143,12 +143,14 @@ class Lddc final {
 #ifdef BUILDING_ROS1
   bool enable_lidar_bag_;
   bool enable_imu_bag_;
+  int lidar_mode_;
   PublisherPtr private_pub_[kMaxSourceLidar];
   PublisherPtr global_pub_;
   PublisherPtr private_imu_pub_[kMaxSourceLidar];
   PublisherPtr global_imu_pub_;
   rosbag::Bag *bag_;
 #elif defined BUILDING_ROS2
+  int lidar_mode_;
   PublisherPtr private_pub_[kMaxSourceLidar];
   PublisherPtr global_pub_;
   PublisherPtr private_imu_pub_[kMaxSourceLidar];
