@@ -130,7 +130,7 @@ bool DriverNode::HandleLidarControl(
 
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
                                                    kLivoxLidarNormal, 
                                                    nullptr, 
                                                    nullptr);
@@ -144,7 +144,7 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
                                                    kLivoxLidarWakeUp, 
                                                    nullptr, 
                                                    nullptr);
@@ -253,7 +253,7 @@ bool DriverNode::HandleLidarControl(
 
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
                                                    kLivoxLidarNormal, 
                                                    nullptr, 
                                                    nullptr);
@@ -267,7 +267,7 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetCurrentLidarDevice(), 
+        livox_status status = SetLivoxLidarWorkMode(lidar->GetLidarHandle(), 
                                                    kLivoxLidarWakeUp, 
                                                    nullptr, 
                                                    nullptr);
