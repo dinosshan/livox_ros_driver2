@@ -40,7 +40,7 @@ class Lddc;
 #ifdef BUILDING_ROS1
 class DriverNode final : public ros::NodeHandle {
  public:
-  DriverNode() = default;
+  DriverNode();
   DriverNode(const DriverNode &) = delete;
   ~DriverNode();
   DriverNode &operator=(const DriverNode &) = delete;

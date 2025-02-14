@@ -74,6 +74,13 @@ bool DriverNode::handleSetWorkMode(
   return success;
 }
 
+DriverNode::DriverNode() : ros::NodeHandle() {
+  // Initialize service server
+  set_work_mode_srv_ = advertiseService("livox_lidar_set_mode", 
+                                      &DriverNode::handleSetWorkMode, 
+                                      this);
+}
+
 #elif defined BUILDING_ROS2
 
 // ROS2 implementation
