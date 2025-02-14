@@ -33,6 +33,7 @@
 #include "driver_node.h"
 #include "lddc.h"
 #include "lds_lidar.h"
+#include "call_back/livox_lidar_callback.h"
 
 using namespace livox_ros;
 
@@ -143,7 +144,7 @@ bool DriverNode::HandleLidarControl(
         // Start LiDAR
         livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarNormal, 
-                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   livox_ros::LivoxLidarCallback::WorkModeChangedCallback, 
                                                    lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
@@ -157,7 +158,7 @@ bool DriverNode::HandleLidarControl(
         // Stop LiDAR
         livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarWakeUp, 
-                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   livox_ros::LivoxLidarCallback::WorkModeChangedCallback, 
                                                    lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
@@ -277,7 +278,7 @@ bool DriverNode::HandleLidarControl(
         // Start LiDAR
         livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarNormal, 
-                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   livox_ros::LivoxLidarCallback::WorkModeChangedCallback, 
                                                    lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
@@ -291,7 +292,7 @@ bool DriverNode::HandleLidarControl(
         // Stop LiDAR
         livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarWakeUp, 
-                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   livox_ros::LivoxLidarCallback::WorkModeChangedCallback, 
                                                    lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
