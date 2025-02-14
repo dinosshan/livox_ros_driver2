@@ -1,5 +1,4 @@
 # Request
-uint32 handle      # Lidar handle/ip
 uint8 work_mode    # 0: Normal mode, 1: Wake up mode
 ---
 # Response

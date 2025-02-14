@@ -55,13 +55,6 @@ bool DriverNode::handleSetWorkMode(
     livox_ros_driver2::LidarSetWorkMode::Request &request,
     livox_ros_driver2::LidarSetWorkMode::Response &response) {
   
-  if (request.handle == 0) {
-    response.success = false;
-    response.message = "Invalid handle: handle cannot be 0";
-    ROS_ERROR("%s", response.message.c_str());
-    return false;
-  }
-
   if (lddc_ptr_ == nullptr || lddc_ptr_->GetLds() == nullptr) {
     response.success = false;
     response.message = "Driver not initialized properly";
@@ -69,27 +62,37 @@ bool DriverNode::handleSetWorkMode(
     return false;
   }
 
+  // Get the first connected Lidar device
+  LdsLidar* lds_lidar = lddc_ptr_->GetLds();
+  if (lds_lidar->lidars_.empty()) {
+    response.success = false;
+    response.message = "No Lidar devices connected";
+    ROS_ERROR("%s", response.message.c_str());
+    return false;
+  }
+
+  LidarDevice* lidar_device = &(lds_lidar->lidars_[0]);  // Get first Lidar
+  uint32_t handle = lidar_device->handle;
+
   LivoxLidarWorkMode work_mode = static_cast<LivoxLidarWorkMode>(
       request.work_mode == 0 ? kLivoxLidarNormal : kLivoxLidarWakeUp);
 
-  ROS_INFO("Attempting to set work mode: handle=%u, mode=%s", 
-           request.handle, 
+  ROS_INFO("Attempting to set work mode: mode=%s", 
            (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"));
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
-      request.handle, work_mode, lddc_ptr_->GetLds());
+      handle, work_mode, lddc_ptr_->GetLds());
 
   response.success = success;
   response.message = success ? 
       "Successfully set work mode" : 
       "Failed to set work mode";
 
-  ROS_INFO("Set Lidar work mode request: handle=%u, mode=%s, result=%s",
-      request.handle,
+  ROS_INFO("Set Lidar work mode request: mode=%s, result=%s",
       (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"),
       (success ? "Success" : "Failed"));
       
-  return true;  // Return true to indicate service completed, even if operation failed
+  return true;
 }
 
 DriverNode::DriverNode() : ros::NodeHandle() {
