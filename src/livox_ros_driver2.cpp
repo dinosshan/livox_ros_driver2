@@ -219,49 +219,6 @@ void DriverNode::ImuDataPollThread()
   } while (status == std::future_status::timeout);
 }
 
-class DriverNode {
-private:
-  ros::ServiceServer lidar_control_service_;
-  uint32_t current_handle_;
-
-  bool handleLidarControl(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
-    livox_status status;
-    if (req.data) {
-      // Turn on - Normal mode
-      status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarNormal, nullptr, nullptr);
-      if (status == kLivoxLidarStatusSuccess) {
-        res.message = "Lidar turned on successfully";
-        res.success = true;
-      } else {
-        res.message = "Failed to turn on lidar";
-        res.success = false;
-      }
-    } else {
-      // Turn off - WakeUp mode
-      status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarWakeUp, nullptr, nullptr);
-      if (status == kLivoxLidarStatusSuccess) {
-        res.message = "Lidar turned off successfully";
-        res.success = true;
-      } else {
-        res.message = "Failed to turn off lidar";
-        res.success = false;
-      }
-    }
-    return true;
-  }
-
-public:
-  DriverNode() {
-    ros::NodeHandle nh;
-    lidar_control_service_ = nh.advertiseService("livox_control", 
-        &DriverNode::handleLidarControl, this);
-  }
-
-  void SetLidarHandle(uint32_t handle) {
-    current_handle_ = handle;
-  }
-};
-
 
 
 

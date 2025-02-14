@@ -212,8 +212,11 @@ int LdsLidar::DeInitLdsLidar(void) {
 void LdsLidar::PrepareExit(void) { DeInitLdsLidar(); }
 
 uint32_t LdsLidar::GetLidarHandle() {
-  if (!lidar_configs_.empty()) {
-    return lidar_configs_[0].handle;
+  // Get the first lidar's handle from the lidars_ array
+  for (int i = 0; i < kMaxLidarCount; i++) {
+    if (lidars_[i].handle != 0) {
+      return lidars_[i].handle;
+    }
   }
   return 0;
 }
