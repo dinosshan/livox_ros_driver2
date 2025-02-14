@@ -117,6 +117,22 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+bool DriverNode::HandleLidarControl(
+    livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
+    livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
+    // Basic implementation
+    if (req.command == "start") {
+        // Add your start logic here
+        res.result = true;
+    } else if (req.command == "stop") {
+        // Add your stop logic here
+        res.result = true;
+    } else {
+        res.result = false;
+    }
+    return res.result;
+}
+
 #elif defined BUILDING_ROS2
 namespace livox_ros
 {
@@ -195,6 +211,22 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
 
   pointclouddata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::PointCloudDataPollThread, this);
   imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, this);
+}
+
+bool DriverNode::HandleLidarControl(
+    livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
+    livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
+    // Basic implementation
+    if (req.command == "start") {
+        // Add your start logic here
+        res.result = true;
+    } else if (req.command == "stop") {
+        // Add your stop logic here
+        res.result = true;
+    } else {
+        res.result = false;
+    }
+    return res.result;
 }
 
 }  // namespace livox_ros
