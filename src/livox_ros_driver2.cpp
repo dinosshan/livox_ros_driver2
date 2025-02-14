@@ -121,16 +121,16 @@ bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
     // Basic implementation
-    if (req.command == "start") {
+    if (req.enable) {
         // Add your start logic here
-        res.result = true;
-    } else if (req.command == "stop") {
-        // Add your stop logic here
-        res.result = true;
+        res.success = true;
+        res.message = "LiDAR enabled successfully";
     } else {
-        res.result = false;
+        // Add your stop logic here
+        res.success = true;
+        res.message = "LiDAR disabled successfully";
     }
-    return res.result;
+    return res.success;
 }
 
 #elif defined BUILDING_ROS2
@@ -217,16 +217,16 @@ bool DriverNode::HandleLidarControl(
     livox_ros_driver2::LidarControlRequest_<std::allocator<void>>& req,
     livox_ros_driver2::LidarControlResponse_<std::allocator<void>>& res) {
     // Basic implementation
-    if (req.command == "start") {
+    if (req.enable) {
         // Add your start logic here
-        res.result = true;
-    } else if (req.command == "stop") {
-        // Add your stop logic here
-        res.result = true;
+        res.success = true;
+        res.message = "LiDAR enabled successfully";
     } else {
-        res.result = false;
+        // Add your stop logic here
+        res.success = true;
+        res.message = "LiDAR disabled successfully";
     }
-    return res.result;
+    return res.success;
 }
 
 }  // namespace livox_ros
