@@ -110,17 +110,16 @@ int main(int argc, char **argv) {
   livox_node.pointclouddata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::PointCloudDataPollThread, &livox_node);
   livox_node.imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, &livox_node);
 
+  // Give some time for services to register
+  ros::Duration(1.0).sleep();
+  
   // List available services
   ROS_INFO_STREAM("Available services:");
-  XmlRpc::XmlRpcValue services;
-  if (ros::master::getSystemState(services)) {
-    XmlRpc::XmlRpcValue::ValueStruct& systemState = services;
-    XmlRpc::XmlRpcValue::ValueArray& serviceList = systemState[2];
-    for (int i = 0; i < serviceList.size(); ++i) {
-      std::string service = serviceList[i][0];
-      if (service.find("livox") != std::string::npos) {
-        ROS_INFO_STREAM(" - " << service);
-      }
+  std::vector<std::string> advertised_services;
+  ros::this_node::getAdvertisedServices(advertised_services);
+  for (const auto& service : advertised_services) {
+    if (service.find("livox") != std::string::npos) {
+      ROS_INFO_STREAM(" - " << service);
     }
   }
 
