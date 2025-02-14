@@ -111,6 +111,15 @@ int main(int argc, char **argv) {
   livox_node.imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, &livox_node);
   while (ros::ok()) { usleep(10000); }
 
+  ROS_INFO_STREAM("Available services:");
+  std::vector<std::string> services;
+  ros::master::getServices(services);
+  for (const auto& service : services) {
+    if (service.find("livox") != std::string::npos) {
+      ROS_INFO_STREAM(" - " << service);
+    }
+  }
+
   return 0;
 }
 

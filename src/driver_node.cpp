@@ -55,7 +55,9 @@ bool DriverNode::handleSetWorkMode(
     livox_ros_driver2::LidarSetWorkMode::Request &request,
     livox_ros_driver2::LidarSetWorkMode::Response &response) {
   
-  ROS_INFO("Service callback triggered");  // Debug log
+  ROS_INFO_STREAM("==========================================");
+  ROS_INFO_STREAM("Service callback triggered for work_mode: " << (int)request.work_mode);
+  ROS_INFO_STREAM("==========================================");
   
   if (lddc_ptr_ == nullptr) {
     ROS_ERROR("lddc_ptr_ is null");
@@ -114,15 +116,16 @@ bool DriverNode::handleSetWorkMode(
 DriverNode::DriverNode() : ros::NodeHandle() {
   ROS_INFO("Initializing DriverNode...");
   
-  // Initialize service server
-  set_work_mode_srv_ = advertiseService("/livox_lidar_set_mode",  // Use absolute path 
+  // Initialize service server with the correct namespace
+  std::string service_name = "/livox_mid_360_0/livox_lidar_set_mode";  // Match your namespace
+  set_work_mode_srv_ = advertiseService(service_name,
                                       &DriverNode::handleSetWorkMode, 
                                       this);
   
   if (set_work_mode_srv_) {
-    ROS_INFO("Service /livox_lidar_set_mode registered successfully");
+    ROS_INFO("Service %s registered successfully", service_name.c_str());
   } else {
-    ROS_ERROR("Failed to register service /livox_lidar_set_mode");
+    ROS_ERROR("Failed to register service %s", service_name.c_str());
   }
 }
 
