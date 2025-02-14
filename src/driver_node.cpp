@@ -64,7 +64,10 @@ bool DriverNode::handleSetWorkMode(
 
   // Get the first connected Lidar device
   LdsLidar* lds_lidar = lddc_ptr_->GetLds();
-  if (lds_lidar->lidars_.empty()) {
+  
+  // Check if any Lidar is connected by checking the first device's connection state
+  if (lds_lidar->lidars_[0].handle == 0 || 
+      lds_lidar->lidars_[0].connect_state == kConnectStateOff) {
     response.success = false;
     response.message = "No Lidar devices connected";
     ROS_ERROR("%s", response.message.c_str());
