@@ -53,6 +53,9 @@ class LdsLidar final : public Lds {
   bool Start();
 
   int DeInitLdsLidar(void);
+
+  uint32_t GetLidarHandle();
+
  private:
   LdsLidar(double publish_freq);
   LdsLidar(const LdsLidar &) = delete;

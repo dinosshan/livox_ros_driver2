@@ -211,4 +211,11 @@ int LdsLidar::DeInitLdsLidar(void) {
 
 void LdsLidar::PrepareExit(void) { DeInitLdsLidar(); }
 
+uint32_t LdsLidar::GetLidarHandle() {
+  if (!lidar_configs_.empty()) {
+    return lidar_configs_[0].handle;
+  }
+  return 0;
+}
+
 }  // namespace livox_ros

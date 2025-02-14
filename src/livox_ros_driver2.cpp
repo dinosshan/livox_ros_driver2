@@ -33,6 +33,7 @@
 #include "driver_node.h"
 #include "lddc.h"
 #include "lds_lidar.h"
+#include "livox_lidar_def.h"
 
 using namespace livox_ros;
 
@@ -98,6 +99,7 @@ int main(int argc, char **argv) {
 
     if ((read_lidar->InitLdsLidar(user_config_path))) {
       DRIVER_INFO(livox_node, "Init lds lidar successfully!");
+      livox_node.SetLidarHandle(read_lidar->GetLidarHandle());
     } else {
       DRIVER_ERROR(livox_node, "Init lds lidar failed!");
     }
@@ -174,6 +176,7 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
 
     if ((read_lidar->InitLdsLidar(user_config_path))) {
       DRIVER_INFO(*this, "Init lds lidar success!");
+      this->SetLidarHandle(read_lidar->GetLidarHandle());
     } else {
       DRIVER_ERROR(*this, "Init lds lidar fail!");
     }
@@ -185,6 +188,9 @@ DriverNode::DriverNode(const rclcpp::NodeOptions & node_options)
   imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, this);
 }
 
+void DriverNode::SetLidarHandle(uint32_t handle) {
+  current_handle_ = handle;
+}
 }  // namespace livox_ros
 
 #include <rclcpp_components/register_node_macro.hpp>
@@ -213,51 +219,47 @@ void DriverNode::ImuDataPollThread()
   } while (status == std::future_status::timeout);
 }
 
-class LivoxDriver {
+class DriverNode {
 private:
-    // Add these member variables
-    ros::ServiceServer lidar_control_service_;
-    uint32_t current_handle_;
+  ros::ServiceServer lidar_control_service_;
+  uint32_t current_handle_;
 
-    // Add this method
-    bool handleLidarControl(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
-        livox_status status;
-        if (req.data) {
-            // Turn on - Normal mode
-            status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarNormal, nullptr, nullptr);
-            if (status == kLivoxLidarStatusSuccess) {
-                res.message = "Lidar turned on successfully";
-                res.success = true;
-            } else {
-                res.message = "Failed to turn on lidar";
-                res.success = false;
-            }
-        } else {
-            // Turn off - WakeUp mode
-            status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarWakeUp, nullptr, nullptr);
-            if (status == kLivoxLidarStatusSuccess) {
-                res.message = "Lidar turned off successfully";
-                res.success = true;
-            } else {
-                res.message = "Failed to turn off lidar";
-                res.success = false;
-            }
-        }
-        return true;
+  bool handleLidarControl(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
+    livox_status status;
+    if (req.data) {
+      // Turn on - Normal mode
+      status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarNormal, nullptr, nullptr);
+      if (status == kLivoxLidarStatusSuccess) {
+        res.message = "Lidar turned on successfully";
+        res.success = true;
+      } else {
+        res.message = "Failed to turn on lidar";
+        res.success = false;
+      }
+    } else {
+      // Turn off - WakeUp mode
+      status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarWakeUp, nullptr, nullptr);
+      if (status == kLivoxLidarStatusSuccess) {
+        res.message = "Lidar turned off successfully";
+        res.success = true;
+      } else {
+        res.message = "Failed to turn off lidar";
+        res.success = false;
+      }
     }
+    return true;
+  }
 
 public:
-    // In the initialization/constructor
-    void init() {
-        // ... existing initialization code ...
-        
-        // Add service server
-        lidar_control_service_ = nh_.advertiseService("livox_control", 
-            &LivoxDriver::handleLidarControl, this);
-        
-        // Store the handle when you get it from the initialization
-        current_handle_ = config.handle; // Make sure to store the handle when you get it
-    }
+  DriverNode() {
+    ros::NodeHandle nh;
+    lidar_control_service_ = nh.advertiseService("livox_control", 
+        &DriverNode::handleLidarControl, this);
+  }
+
+  void SetLidarHandle(uint32_t handle) {
+    current_handle_ = handle;
+  }
 };
 
 
