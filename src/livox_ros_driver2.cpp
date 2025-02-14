@@ -113,15 +113,12 @@ int main(int argc, char **argv) {
   // Give some time for services to register
   ros::Duration(1.0).sleep();
   
-  // List available services
-  ROS_INFO_STREAM("Available services:");
-  std::vector<std::string> advertised_services;
-  ros::this_node::getAdvertisedServices(advertised_services);
-  for (const auto& service : advertised_services) {
-    if (service.find("livox") != std::string::npos) {
-      ROS_INFO_STREAM(" - " << service);
-    }
-  }
+  // Get and display the service name
+  std::string node_namespace = ros::this_node::getNamespace();
+  std::string service_name = (node_namespace == "/" ? 
+                            "/livox_lidar_set_mode" : 
+                            node_namespace + "/livox_lidar_set_mode");
+  ROS_INFO_STREAM("Service should be available at: " << service_name);
 
   while (ros::ok()) { 
     usleep(10000); 
