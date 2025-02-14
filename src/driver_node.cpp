@@ -24,6 +24,8 @@
 
 #include "driver_node.h"
 #include "lddc.h"
+#include "call_back/livox_lidar_callback.h"
+#include "livox_lidar_def.h"
 
 namespace livox_ros {
 
@@ -49,7 +51,7 @@ bool DriverNode::handleSetWorkMode(
       kLivoxLidarNormal : kLivoxLidarWakeUp;
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
-      request.handle, work_mode, lddc_ptr_->GetLdsLidar());
+      request.handle, work_mode, lddc_ptr_->GetLds());
 
   response.success = success;
   response.message = success ? 
@@ -86,7 +88,7 @@ void DriverNode::handleSetWorkMode(
       kLivoxLidarNormal : kLivoxLidarWakeUp;
 
   bool success = LivoxLidarCallback::SetLidarWorkMode(
-      request->handle, work_mode, lddc_ptr_->GetLdsLidar());
+      request->handle, work_mode, lddc_ptr_->GetLds());
 
   response->success = success;
   response->message = success ? 
