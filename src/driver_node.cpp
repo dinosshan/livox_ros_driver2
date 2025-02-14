@@ -55,27 +55,40 @@ bool DriverNode::handleSetWorkMode(
     livox_ros_driver2::LidarSetWorkMode::Request &request,
     livox_ros_driver2::LidarSetWorkMode::Response &response) {
   
-  if (lddc_ptr_ == nullptr || lddc_ptr_->GetLds() == nullptr) {
+  ROS_INFO("Service callback triggered");  // Debug log
+  
+  if (lddc_ptr_ == nullptr) {
+    ROS_ERROR("lddc_ptr_ is null");
     response.success = false;
-    response.message = "Driver not initialized properly";
-    ROS_ERROR("%s", response.message.c_str());
-    return false;
+    response.message = "Driver not initialized properly (lddc_ptr_ is null)";
+    return true;  // Return true to send the response
+  }
+
+  if (lddc_ptr_->GetLds() == nullptr) {
+    ROS_ERROR("GetLds() returned null");
+    response.success = false;
+    response.message = "Driver not initialized properly (LDS is null)";
+    return true;  // Return true to send the response
   }
 
   // Get the first connected Lidar device
   LdsLidar* lds_lidar = lddc_ptr_->GetLds();
+  ROS_INFO("Got LDS instance");  // Debug log
   
   // Check if any Lidar is connected by checking the first device's connection state
   if (lds_lidar->lidars_[0].handle == 0 || 
       lds_lidar->lidars_[0].connect_state == kConnectStateOff) {
+    ROS_ERROR("No Lidar connected (handle: %u, state: %d)", 
+              lds_lidar->lidars_[0].handle,
+              lds_lidar->lidars_[0].connect_state);
     response.success = false;
     response.message = "No Lidar devices connected";
-    ROS_ERROR("%s", response.message.c_str());
-    return false;
+    return true;  // Return true to send the response
   }
 
   LidarDevice* lidar_device = &(lds_lidar->lidars_[0]);  // Get first Lidar
   uint32_t handle = lidar_device->handle;
+  ROS_INFO("Found Lidar device with handle: %u", handle);  // Debug log
 
   LivoxLidarWorkMode work_mode = static_cast<LivoxLidarWorkMode>(
       request.work_mode == 0 ? kLivoxLidarNormal : kLivoxLidarWakeUp);
@@ -95,14 +108,22 @@ bool DriverNode::handleSetWorkMode(
       (work_mode == kLivoxLidarNormal ? "Normal" : "WakeUp"),
       (success ? "Success" : "Failed"));
       
-  return true;
+  return true;  // Always return true to send the response
 }
 
 DriverNode::DriverNode() : ros::NodeHandle() {
+  ROS_INFO("Initializing DriverNode...");
+  
   // Initialize service server
-  set_work_mode_srv_ = advertiseService("livox_lidar_set_mode", 
+  set_work_mode_srv_ = advertiseService("/livox_lidar_set_mode",  // Use absolute path 
                                       &DriverNode::handleSetWorkMode, 
                                       this);
+  
+  if (set_work_mode_srv_) {
+    ROS_INFO("Service /livox_lidar_set_mode registered successfully");
+  } else {
+    ROS_ERROR("Failed to register service /livox_lidar_set_mode");
+  }
 }
 
 #elif defined BUILDING_ROS2
