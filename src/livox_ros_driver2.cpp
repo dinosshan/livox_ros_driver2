@@ -213,6 +213,53 @@ void DriverNode::ImuDataPollThread()
   } while (status == std::future_status::timeout);
 }
 
+class LivoxDriver {
+private:
+    // Add these member variables
+    ros::ServiceServer lidar_control_service_;
+    uint32_t current_handle_;
+
+    // Add this method
+    bool handleLidarControl(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
+        livox_status status;
+        if (req.data) {
+            // Turn on - Normal mode
+            status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarNormal, nullptr, nullptr);
+            if (status == kLivoxLidarStatusSuccess) {
+                res.message = "Lidar turned on successfully";
+                res.success = true;
+            } else {
+                res.message = "Failed to turn on lidar";
+                res.success = false;
+            }
+        } else {
+            // Turn off - WakeUp mode
+            status = SetLivoxLidarWorkMode(current_handle_, kLivoxLidarWakeUp, nullptr, nullptr);
+            if (status == kLivoxLidarStatusSuccess) {
+                res.message = "Lidar turned off successfully";
+                res.success = true;
+            } else {
+                res.message = "Failed to turn off lidar";
+                res.success = false;
+            }
+        }
+        return true;
+    }
+
+public:
+    // In the initialization/constructor
+    void init() {
+        // ... existing initialization code ...
+        
+        // Add service server
+        lidar_control_service_ = nh_.advertiseService("livox_control", 
+            &LivoxDriver::handleLidarControl, this);
+        
+        // Store the handle when you get it from the initialization
+        current_handle_ = config.handle; // Make sure to store the handle when you get it
+    }
+};
+
 
 
 

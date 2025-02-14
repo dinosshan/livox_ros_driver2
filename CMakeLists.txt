@@ -162,6 +162,7 @@ if(ROS_EDITION STREQUAL "ROS1")
     ${catkin_LIBRARIES}
     ${PCL_LIBRARIES}
     ${APR_LIBRARIES}
+    std_srvs
   )
 
 
@@ -310,6 +311,7 @@ else(ROS_EDITION STREQUAL "ROS2")
     ${Boost_LIBRARY}
     ${PCL_LIBRARIES}
     ${APR_LIBRARIES}
+    std_srvs
   )
 
   rclcpp_components_register_node(${PROJECT_NAME}
