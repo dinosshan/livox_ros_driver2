@@ -29,6 +29,7 @@
 
 #include "driver_node.h"
 #include "lds.h"
+#include "lds_lidar.h"
 
 namespace livox_ros {
 
@@ -68,6 +69,7 @@ using ImuMsg = sensor_msgs::msg::Imu;
 using PointCloud = pcl::PointCloud<pcl::PointXYZI>;
 
 class DriverNode;
+class LdsLidar;
 
 class Lddc final {
  public:
@@ -97,7 +99,7 @@ class Lddc final {
    * @brief Get the LDS (Lidar Data Source) instance
    * @return Pointer to the LDS instance
    */
-  LdsLidar* GetLds() { return lds_; }
+  LdsLidar* GetLds() { return static_cast<LdsLidar*>(lds_); }
 
  public:
   Lds *lds_;

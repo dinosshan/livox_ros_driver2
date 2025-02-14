@@ -24,6 +24,7 @@
 
 #include "driver_node.h"
 #include "lddc.h"
+#include "lds_lidar.h"
 #include "call_back/livox_lidar_callback.h"
 #include "livox_lidar_def.h"
 #include "livox_lidar_api.h"
