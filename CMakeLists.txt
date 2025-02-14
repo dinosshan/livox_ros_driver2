@@ -245,6 +245,11 @@ else(ROS_EDITION STREQUAL "ROS2")
     LIBRARY_NAME ${PROJECT_NAME}
   )
 
+  rosidl_generate_interfaces(${PROJECT_NAME}
+    "srv/LidarSetWorkMode.srv"
+    # ... any existing msgs ...
+  )
+
   ## make sure the livox_lidar_sdk_shared library is installed
   find_library(LIVOX_LIDAR_SDK_LIBRARY liblivox_lidar_sdk_shared.so /usr/local/lib REQUIRED)
 
