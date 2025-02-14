@@ -128,12 +128,23 @@ bool DriverNode::HandleLidarControl(
         return res.success;
     }
 
+    // Get first connected device
+    uint8_t index = 0;
+    if (lidar->cache_index_.GetIndex(kLivoxLidarType, 0, index) != 0) {
+        res.success = false;
+        res.message = "No LiDAR device found";
+        return res.success;
+    }
+    
+    LidarDevice* device = &(lidar->lidars_[index]);
+    uint32_t handle = device->handle;
+
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetDeviceHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarNormal, 
-                                                   nullptr, 
-                                                   nullptr);
+                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
             res.message = "Failed to start LiDAR, status: " + std::to_string(status);
@@ -144,10 +155,10 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetDeviceHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarWakeUp, 
-                                                   nullptr, 
-                                                   nullptr);
+                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
             res.message = "Failed to stop LiDAR, status: " + std::to_string(status);
@@ -251,12 +262,23 @@ bool DriverNode::HandleLidarControl(
         return res.success;
     }
 
+    // Get first connected device
+    uint8_t index = 0;
+    if (lidar->cache_index_.GetIndex(kLivoxLidarType, 0, index) != 0) {
+        res.success = false;
+        res.message = "No LiDAR device found";
+        return res.success;
+    }
+    
+    LidarDevice* device = &(lidar->lidars_[index]);
+    uint32_t handle = device->handle;
+
     if (req.enable) {
         // Start LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetDeviceHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarNormal, 
-                                                   nullptr, 
-                                                   nullptr);
+                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
             res.message = "Failed to start LiDAR, status: " + std::to_string(status);
@@ -267,10 +289,10 @@ bool DriverNode::HandleLidarControl(
         }
     } else {
         // Stop LiDAR
-        livox_status status = SetLivoxLidarWorkMode(lidar->GetDeviceHandle(), 
+        livox_status status = SetLivoxLidarWorkMode(handle, 
                                                    kLivoxLidarWakeUp, 
-                                                   nullptr, 
-                                                   nullptr);
+                                                   LivoxLidarCallback::WorkModeChangedCallback, 
+                                                   lidar);
         if (status != kLivoxLidarStatusSuccess) {
             res.success = false;
             res.message = "Failed to stop LiDAR, status: " + std::to_string(status);
